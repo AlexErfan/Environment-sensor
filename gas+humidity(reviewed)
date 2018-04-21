@@ -38,7 +38,7 @@ void dht11_wrapper() {
 void loop()
 {
   gas_level= analogRead(sensorPin);
-  Serial.print("gaslevel= ");
+  Serial.print("alchoholic vapor= ");
   Serial.print(gas_level);
   Serial.print("\nRetrieving information from sensor: ");
   Serial.print("Read sensor: ");
