@@ -1,93 +1,54 @@
+
 /*
-  LiquidCrystal Library - Hello World
+  Board            int.0   int.1   int.2   int.3   int.4   int.5
+ Uno, Ethernet    2   3
+ Mega2560   2   3   21    20    19    18
+ Leonardo   3   2   0   1
+ Due            (any pin, more info http://arduino.cc/en/Reference/AttachInterrupt)
+ */
 
- Demonstrates the use a 16x2 LCD display.  The LiquidCrystal
- library works with all LCD displays that are compatible with the
- Hitachi HD44780 driver. There are many of them out there, and you
- can usually tell them by the 16-pin interface.
-
- This sketch prints "Hello World!" to the LCD
- and shows the time.
-
-  The circuit:
- * LCD RS pin to digital pin 12
- * LCD Enable pin to digital pin 11
- * LCD D4 pin to digital pin 5
- * LCD D5 pin to digital pin 4
- * LCD D6 pin to digital pin 3
- * LCD D7 pin to digital pin 2
- * LCD R/W pin to ground
- * LCD VSS pin to ground
- * LCD VCC pin to 5V
- * 10K resistor:
- * ends to +5V and ground
- * wiper to LCD VO pin (pin 3)
-
- Library originally added 18 Apr 2008
- by David A. Mellis
- library modified 5 Jul 2009
- by Limor Fried (http://www.ladyada.net)
- example added 9 Jul 2009
- by Tom Igoe
- modified 22 Nov 2010
- by Tom Igoe
- modified 7 Nov 2016
- by Arturo Guadalupi
-
- This example code is in the public domain.
-
- http://www.arduino.cc/en/Tutorial/LiquidCrystalHelloWorld
-
-*/
-
-// include the library code:
-#include <LiquidCrystal.h>
 #include <idDHT11.h>
 
-// initialize the library by associating any needed LCD interface pin
-// with the arduino pin number it is connected to
-const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
-LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
-//added code
+const int sensorPin= 1;
+int gas_level;
 int idDHT11pin = 2; //Digital pin for comunications
 int idDHT11intNumber = 0; //interrupt number (must be the one that use the previus defined pin (see table above)
-
-const int sensorPin = 0;
-int gaslevel;
-
-//added code
+int ldrpin=0;
+int val;//Connect analog port A0 with light sensor val=0;//val save the reading of the sensor
+//declaration
 void dht11_wrapper(); // must be declared before the lib initialization
 
-//lib
+// Lib instantiate
 idDHT11 DHT11(idDHT11pin,idDHT11intNumber,dht11_wrapper);
 
-void setup() {
+void setup()
+{
   Serial.begin(9600);
-  pinMode(sensorPin, INPUT);
-   lcd.begin(16, 2);
-  // Print a message to the LCD.
-  delay(1000);
-  //added as new code
   Serial.println("idDHT11 Example program");
   Serial.print("LIB version: ");
   Serial.println(IDDHT11LIB_VERSION);
   Serial.println("---------------");
+  pinMode(sensorPin,INPUT);
 }
-//added as new code
+// This wrapper is in charge of calling 
+// mus be defined like this for the lib work
 void dht11_wrapper() {
   DHT11.isrCallback();
 }
 
-void loop() {
-  gaslevel = analogRead(sensorPin);
-  Serial.println(gaslevel);
-  lcd.print(gaslevel);
-  lcd.setCursor(0, 1);
-  // print the number of seconds since reset:
-  lcd.print(millis() / 1000);
+void loop()
+{
+  gas_level= analogRead(sensorPin);
+  Serial.print("alchoholic vapour: ");
+  Serial.println(gas_level);
+  val=analogRead(ldrpin);//read from A0 and assign the value to val 
+  Serial.print("Lightness: ");
+  Serial.println(val);//show the value of val
   Serial.print("\nRetrieving information from sensor: ");
   Serial.print("Read sensor: ");
   //delay(100);
+  
+  delay(2000);//delay for 10 millisecond
   DHT11.acquire();
   while (DHT11.acquiring())
     ;
@@ -140,5 +101,6 @@ void loop() {
   Serial.print("Dew Point Slow (oC): ");
   Serial.println(DHT11.getDewPointSlow());
 
-  delay(2000);
+  Serial.print("\n\n\n");
+
 }
